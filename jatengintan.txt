@@ -18,6 +18,8 @@
   <meta content="https://intan.dpmptsp.jatengprov.go.id/" property="og:url">
   <meta content="DarkGold" name="theme-color">
   <meta content="id-ID" name="language">
+<meta name="google-site-verification" content="n2WDVrN6voTKxda01hYe9U92rBmAabcJcOp7d67H3OU" />
+ 
   <meta content="website" name="categories">
   <meta content="id-ID" name="geo.region">
   <meta content="Indonesia" name="geo.placename">
